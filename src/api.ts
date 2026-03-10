@@ -26,56 +26,108 @@ export const API_ENDPOINTS = {
 // API Helper Functions
 export const apiClient = {
   async get(url: string) {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.statusText}`)
+    try {
+      console.log('API GET:', url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+      })
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`API Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('API Response:', data);
+      return data;
+    } catch (error) {
+      console.error('API GET Error:', error);
+      throw error;
     }
-    return response.json()
   },
 
   async post(url: string, data: any) {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.statusText}`)
+    try {
+      console.log('API POST:', url, data);
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+        body: JSON.stringify(data),
+      })
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`API Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const responseData = await response.json();
+      console.log('API Response:', responseData);
+      return responseData;
+    } catch (error) {
+      console.error('API POST Error:', error);
+      throw error;
     }
-    return response.json()
   },
 
   async put(url: string, data: any) {
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.statusText}`)
+    try {
+      console.log('API PUT:', url, data);
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+        body: JSON.stringify(data),
+      })
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`API Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const responseData = await response.json();
+      console.log('API Response:', responseData);
+      return responseData;
+    } catch (error) {
+      console.error('API PUT Error:', error);
+      throw error;
     }
-    return response.json()
   },
 
   async delete(url: string) {
-    const response = await fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.statusText}`)
+    try {
+      console.log('API DELETE:', url);
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+      })
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`API Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('API Response:', data);
+      return data;
+    } catch (error) {
+      console.error('API DELETE Error:', error);
+      throw error;
     }
-    return response.json()
   },
 }

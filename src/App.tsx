@@ -28,7 +28,7 @@ import {
   Trash2,
   Edit3
 } from "lucide-react";
-import { io, Socket } from "socket.io-client";
+// Socket.IO removed - not needed for Cloudflare Pages
 import { translations, faqs, recommendationCategories, trendingThemes } from './constants';
 import { API_ENDPOINTS, apiClient } from './api';
 
@@ -77,17 +77,10 @@ export default function App() {
   const [youtubeConnected, setYoutubeConnected] = useState(false);
   const [tokens, setTokens] = useState<any>(null);
 
-  const socketRef = useRef<Socket | null>(null);
+  // Socket.IO removed - using REST API instead
   const t = translations[lang];
 
   useEffect(() => {
-    socketRef.current = io();
-    socketRef.current.on('message', (msg: ChatMessage) => {
-      if (msg.sender === 'other') {
-        handleIncomingMessage(msg);
-      }
-    });
-
     const handleOAuth = (event: MessageEvent) => {
       if (event.data?.type === 'OAUTH_AUTH_SUCCESS') {
         setYoutubeConnected(true);
@@ -100,7 +93,6 @@ export default function App() {
     loadPlaylistHistory();
 
     return () => {
-      socketRef.current?.disconnect();
       window.removeEventListener('message', handleOAuth);
     };
   }, []);
@@ -214,21 +206,36 @@ export default function App() {
       lang: lang
     };
     setMessages(prev => [...prev, msg]);
-    socketRef.current?.emit('message', { ...msg, sender: 'other' });
+    
+    // Send to backend API
+    try {
+      await apiClient.post(API_ENDPOINTS.chatSend, msg);
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
+    
     setInputText('');
   };
 
   const connectYoutube = async () => {
     try {
       const response = await apiClient.get(API_ENDPOINTS.authUrl);
+      if (response.configured === false) {
+        alert('YouTube 연결 기능이 아직 구성되지 않았습니다.\n\n관리자가 YouTube OAuth 자격증명을 설정해야 합니다.\n\n현재는 플레이리스트 생성 기능만 사용 가능합니다.');
+        return;
+      }
       if (response.url) {
         window.open(response.url, 'youtube_auth', 'width=600,height=700');
       } else {
         alert('YouTube 인증 URL을 가져올 수 없습니다.');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('YouTube connection error:', error);
-      alert('YouTube 연결 중 오류가 발생했습니다.');
+      if (error.message && error.message.includes('500')) {
+        alert('YouTube 연결 기능이 아직 구성되지 않았습니다.\n\n관리자가 YouTube OAuth 자격증명을 설정해야 합니다.\n\n현재는 플레이리스트 생성 기능만 사용 가능합니다.');
+      } else {
+        alert('YouTube 연결 중 오류가 발생했습니다.');
+      }
     }
   };
 

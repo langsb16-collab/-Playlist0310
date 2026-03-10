@@ -14,7 +14,23 @@ const app = new Hono<{ Bindings: Bindings }>()
 
 // CORS configuration
 app.use('/*', cors({
-  origin: ['https://playlist0310.pages.dev', 'https://848e6208.playlist0310.pages.dev', 'https://puke365.net', 'http://localhost:5173'],
+  origin: (origin) => {
+    // Allow all Cloudflare Pages deployments and custom domains
+    if (!origin) return true; // Allow requests with no origin (e.g., mobile apps, curl)
+    
+    const allowedOrigins = [
+      'https://puke365.net',
+      'https://www.puke365.net',
+      'http://localhost:5173',
+    ];
+    
+    // Allow all playlist0310.pages.dev subdomains
+    if (origin.includes('.playlist0310.pages.dev') || origin === 'https://playlist0310.pages.dev') {
+      return true;
+    }
+    
+    return allowedOrigins.includes(origin);
+  },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
   exposeHeaders: ['Content-Length'],
@@ -35,10 +51,21 @@ app.get('/health', (c) => {
 
 app.get('/api/auth/url', (c) => {
   const YOUTUBE_CLIENT_ID = c.env.YOUTUBE_CLIENT_ID
-  const APP_URL = c.env.APP_URL || 'https://playlist0310.pages.dev'
+  const APP_URL = c.env.APP_URL || 'https://puke365.net'
   
   if (!YOUTUBE_CLIENT_ID) {
-    return c.json({ error: 'YouTube Client ID not configured' }, 500)
+    return c.json({ 
+      error: 'YouTube OAuth가 구성되지 않았습니다.',
+      configured: false 
+    }, 500)
+  }
+  
+  // Check if it's a placeholder
+  if (YOUTUBE_CLIENT_ID.includes('placeholder')) {
+    return c.json({ 
+      error: 'YouTube OAuth 자격증명이 설정되지 않았습니다. 관리자에게 문의하세요.',
+      configured: false 
+    }, 500)
   }
   
   const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth')
@@ -49,7 +76,10 @@ app.get('/api/auth/url', (c) => {
   authUrl.searchParams.set('access_type', 'offline')
   authUrl.searchParams.set('prompt', 'consent')
   
-  return c.json({ url: authUrl.toString() })
+  return c.json({ 
+    url: authUrl.toString(),
+    configured: true 
+  })
 })
 
 app.post('/api/auth/exchange', async (c) => {
