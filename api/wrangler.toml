@@ -1,0 +1,19 @@
+name = "playlist0310-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "webapp-production"
+database_id = "785b47fb-de85-4a9f-a6a3-faa674d676e8"
+
+# Environment variables (set via wrangler secret put)
+# GEMINI_API_KEY
+# YOUTUBE_CLIENT_ID
+# YOUTUBE_CLIENT_SECRET
+# APP_URL
+
+[vars]
+APP_URL = "https://playlist0310.pages.dev"
