@@ -10,176 +10,211 @@ View your app in AI Studio: https://ai.studio/apps/5167425a-9cca-4cb7-876f-9cf31
 
 ## 🌐 배포된 URLs
 
-- **Production**: https://848e6208.playlist0310.pages.dev/
-- **GitHub**: https://github.com/langsb16-collab/-Playlist0310
+- **Frontend**: https://848e6208.playlist0310.pages.dev/
+- **Backend API**: https://playlist0310-api.langsb16.workers.dev
+- **GitHub Frontend**: https://github.com/langsb16-collab/-Playlist0310
 - **커스텀 도메인**: puke365.net (Cloudflare 대시보드에서 수동 설정 필요)
 
-## ✅ 현재 상태
+## ✅ 완료된 작업
 
-### 완료된 작업
+### Frontend (Cloudflare Pages)
 1. **✅ React 프론트엔드** - 완전히 작동하는 UI/UX
-2. **✅ Cloudflare Pages 배포** - 프로덕션 환경 활성화
-3. **✅ 반응형 디자인** - 모바일/데스크톱 최적화
-4. **✅ 다국어 지원** - 8개 언어 (한국어, 영어, 중국어, 일본어, 러시아어, 힌디어, 포르투갈어, 인도네시아어)
-5. **✅ 프론트엔드 기능** - 플레이리스트 생성, 히스토리, 대시보드, 설정
+2. **✅ 반응형 디자인** - 모바일/데스크톱 최적화
+3. **✅ 다국어 지원** - 8개 언어 (한국어, 영어, 중국어, 일본어, 러시아어, 힌디어, 포르투갈어, 인도네시아어)
+4. **✅ 프론트엔드 기능** - 플레이리스트 생성, 히스토리, 대시보드, 설정
 
-### 백엔드 API 구현 필요
-
-현재 프론트엔드는 클라이언트사이드 Gemini API를 사용하고 있습니다. 다음 기능들을 위해 백엔드 API가 필요합니다:
-
-1. **YouTube OAuth 인증**
-   - `/api/auth/url` - OAuth URL 생성
-   - `/auth/callback` - OAuth 콜백 처리
-   
-2. **Gemini AI API 프록시**
-   - `/api/gemini/generate` - AI 플레이리스트 생성
-   - API 키 보안 처리
-
-3. **실시간 채팅** (Socket.IO 대체)
-   - `/api/chat/send` - 메시지 전송
-   - `/api/chat/messages` - 메시지 조회
-   - Cloudflare Durable Objects 사용 권장
-
-4. **플레이리스트 저장**
-   - `/api/playlists` - CRUD 작업
-   - Cloudflare D1 데이터베이스 필요
+### Backend API (Cloudflare Workers)
+1. **✅ YouTube OAuth 인증** - `/api/auth/url`, `/api/auth/exchange`
+2. **✅ Gemini AI 프록시** - `/api/gemini/generate`, `/api/gemini/translate`
+3. **✅ 플레이리스트 CRUD** - Cloudflare D1 데이터베이스 연동
+4. **✅ 채팅 API** - `/api/chat/send`, `/api/chat/messages`
+5. **✅ CORS 설정** - 프론트엔드 도메인 허용
+6. **✅ 보안 구성** - API 키는 Cloudflare Secrets로 보호
 
 ## 🔧 기술 스택
 
-- **Frontend**: React 19, TypeScript, TailwindCSS, Motion (Framer Motion)
-- **AI**: Google Gemini API
-- **Deployment**: Cloudflare Pages
+### Frontend
+- **Framework**: React 19, TypeScript
+- **Styling**: TailwindCSS
+- **Animation**: Motion (Framer Motion)
 - **Icons**: Lucide React
-- **Build Tool**: Vite 6
-- **Package Manager**: npm
+- **Build**: Vite 6
+- **Deployment**: Cloudflare Pages
 
-## 🎯 권장 다음 단계
+### Backend
+- **Runtime**: Cloudflare Workers
+- **Framework**: Hono
+- **Database**: Cloudflare D1 (SQLite)
+- **AI**: Google Gemini API
+- **OAuth**: YouTube API v3
 
-### 1. Cloudflare Workers로 백엔드 API 구현
+## 🚀 주요 기능
 
-별도의 Worker로 API를 구현하고 Cloudflare Pages와 연결:
+### ✅ 현재 작동하는 기능
+- AI 플레이리스트 생성 (Gemini API via 백엔드)
+- 트렌딩 테마 추천
+- 플레이리스트 히스토리 (D1 데이터베이스)
+- 다국어 자동 번역
+- 반응형 UI/UX
+- FAQ 섹션
+- 설정 관리
 
+### ⏳ 추가 구현 필요
+- YouTube 계정 연결 (OAuth 코드 완성 필요)
+- 유튜브 자동 업로드
+- 실시간 채팅 (Durable Objects 필요)
+
+## ⚙️ 환경 설정
+
+### Frontend 환경변수
+`.env.local` 파일 생성:
 ```bash
-# 새 Workers 프로젝트 생성
-npm create cloudflare@latest playlist0310-api -- --type hello-world
-
-# Hono 프레임워크로 API 라우트 구현
-# - YouTube OAuth
-# - Gemini AI Proxy  
-# - Chat API (Durable Objects)
-# - Playlist CRUD (D1 Database)
+VITE_API_BASE_URL=https://playlist0310-api.langsb16.workers.dev
 ```
 
-### 2. Cloudflare D1 데이터베이스 설정
-
-플레이리스트 저장을 위한 SQLite 데이터베이스:
+### Backend Secrets (필수)
+다음 Secrets를 Cloudflare Workers에 설정해야 합니다:
 
 ```bash
-wrangler d1 create playlist0310-db
-wrangler d1 migrations create playlist0310-db create_tables
+export CLOUDFLARE_API_TOKEN="your-token"
+cd /home/user/playlist0310-api
+
+# Set secrets
+npx wrangler secret put GEMINI_API_KEY
+npx wrangler secret put YOUTUBE_CLIENT_ID
+npx wrangler secret put YOUTUBE_CLIENT_SECRET
 ```
 
-### 3. 환경변수 설정
-
-Cloudflare Pages 대시보드에서 설정:
-- `GEMINI_API_KEY` - Gemini AI API 키
-- `YOUTUBE_CLIENT_ID` - YouTube OAuth 클라이언트 ID
-- `YOUTUBE_CLIENT_SECRET` - YouTube OAuth 시크릿
-- `APP_URL` - 앱 URL (https://playlist0310.pages.dev)
-
-### 4. 커스텀 도메인 연결
-
-Cloudflare 대시보드에서 `puke365.net` 도메인 연결:
-1. https://dash.cloudflare.com 로그인
-2. Pages > playlist0310 선택
-3. Custom domains > Add domain
-4. DNS 레코드 자동 설정
+**주의**: Secrets를 설정하지 않으면 Gemini AI와 YouTube OAuth가 작동하지 않습니다!
 
 ## 📦 로컬 개발
 
-**Prerequisites:** Node.js 18+
+### Frontend
+```bash
+cd /home/user/playlist0310
+npm install
+npm run dev
+```
 
-1. Install dependencies:
+### Backend API
+```bash
+cd /home/user/playlist0310-api
+npm install
+npm run dev  # 로컬 서버: http://localhost:8787
+```
+
+## 🚀 배포
+
+### Frontend
+```bash
+cd /home/user/playlist0310
+npm run build
+npx wrangler pages deploy dist --project-name playlist0310
+```
+
+### Backend API
+```bash
+cd /home/user/playlist0310-api
+npm run deploy
+```
+
+## 📊 API 엔드포인트
+
+### YouTube OAuth
+- `GET /api/auth/url` - OAuth 인증 URL 생성
+- `POST /api/auth/exchange` - 인증 코드를 토큰으로 교환
+
+### Gemini AI
+- `POST /api/gemini/generate` - AI 콘텐츠 생성
+- `POST /api/gemini/translate` - 텍스트 번역
+
+### Playlists
+- `GET /api/playlists` - 플레이리스트 목록
+- `POST /api/playlists` - 플레이리스트 생성
+- `GET /api/playlists/:id` - 플레이리스트 조회
+- `PUT /api/playlists/:id` - 플레이리스트 수정
+- `DELETE /api/playlists/:id` - 플레이리스트 삭제
+
+### Chat
+- `POST /api/chat/send` - 메시지 전송
+- `GET /api/chat/messages` - 메시지 조회
+
+## 🔒 보안
+
+- ✅ API 키는 Cloudflare Secrets로 보호
+- ✅ CORS 설정으로 허용된 도메인만 접근
+- ✅ D1 데이터베이스는 SQL injection 방지
+- ✅ 환경변수는 Git에 커밋되지 않음
+
+## 🎯 다음 단계
+
+1. **Secrets 설정** (가장 중요!)
    ```bash
-   npm install
+   npx wrangler secret put GEMINI_API_KEY
+   npx wrangler secret put YOUTUBE_CLIENT_ID
+   npx wrangler secret put YOUTUBE_CLIENT_SECRET
    ```
 
-2. Set environment variables in `.env.local`:
-   ```
-   GEMINI_API_KEY=your_key_here
-   YOUTUBE_CLIENT_ID=your_id_here
-   YOUTUBE_CLIENT_SECRET=your_secret_here
-   APP_URL=http://localhost:5173
-   ```
-
-3. Run the app:
+2. **프론트엔드 재배포** (API 연결 포함)
    ```bash
-   npm run dev
-   ```
-
-4. Build for production:
-   ```bash
+   cd /home/user/playlist0310
    npm run build
-   ```
-
-5. Deploy to Cloudflare Pages:
-   ```bash
    npx wrangler pages deploy dist --project-name playlist0310
    ```
 
-## 🌟 주요 기능
+3. **puke365.net 커스텀 도메인 연결**
+   - Cloudflare 대시보드에서 설정
+   - DNS 레코드 자동 추가
 
-### 현재 작동하는 기능
-- ✅ AI 플레이리스트 생성 (테마 기반)
-- ✅ 트렌딩 테마 추천
-- ✅ 플레이리스트 히스토리
-- ✅ 다국어 자동 번역
-- ✅ 반응형 UI/UX
-- ✅ FAQ 섹션
-- ✅ 설정 관리
+4. **YouTube OAuth 완성**
+   - 프론트엔드에서 OAuth 플로우 완성
+   - 토큰 저장 및 갱신 로직 구현
 
-### 백엔드 구현 필요 기능
-- ⏳ YouTube 계정 연결
-- ⏳ 유튜브 자동 업로드
-- ⏳ 실시간 채팅
-- ⏳ 플레이리스트 영구 저장
-- ⏳ 사용자 인증
+5. **실시간 채팅 구현**
+   - Cloudflare Durable Objects 사용
+   - WebSocket 연결
 
-## 📊 프로젝트 구조
+## 📝 프로젝트 구조
 
 ```
-playlist0310/
+playlist0310/                    # Frontend
 ├── src/
-│   ├── App.tsx           # 메인 애플리케이션
-│   ├── constants.ts      # 다국어 번역, FAQ, 추천 테마
-│   ├── main.tsx          # 엔트리 포인트
-│   └── index.css         # 글로벌 스타일
-├── messages/             # 다국어 JSON 파일
-│   ├── ko.json
-│   ├── en.json
-│   └── ...
-├── dist/                 # 빌드 출력
-├── package.json
-├── vite.config.ts
-└── tsconfig.json
+│   ├── App.tsx                  # 메인 애플리케이션
+│   ├── api.ts                   # API 클라이언트
+│   ├── constants.ts             # 다국어, FAQ
+│   └── main.tsx
+├── dist/                        # 빌드 출력
+└── package.json
+
+playlist0310-api/                # Backend
+├── src/
+│   └── index.ts                 # API 서버
+├── migrations/
+│   └── 0001_create_playlists.sql
+├── wrangler.toml                # Cloudflare 설정
+└── package.json
 ```
 
-## 🔒 보안 고려사항
+## 💡 문제 해결
 
-**중요**: 현재 프론트엔드에서 직접 Gemini API를 호출하고 있어 API 키가 노출됩니다.  
-프로덕션 환경에서는 반드시 백엔드 프록시를 통해 API를 호출해야 합니다.
+### API 연결 오류
+- CORS 설정 확인
+- API URL이 올바른지 확인
+- Secrets가 설정되었는지 확인
 
-## 📝 업데이트 내역
+### 데이터베이스 오류
+- D1 마이그레이션 실행 확인
+- `npm run db:migrate` 실행
 
-- **2026-03-10**: Cloudflare Pages 배포 완료, React 프론트엔드 구현
-- **2026-03-10**: 다국어 지원 추가 (8개 언어)
-- **2026-03-10**: 백엔드 API 설계 완료 (구현 대기)
+### 배포 오류
+- Cloudflare API 토큰 확인
+- `npx wrangler whoami`로 인증 확인
 
-## 💡 도움말
+## 📞 지원
 
 문제가 발생하거나 기능 요청이 있으면 GitHub Issues에 등록해주세요.
 
 ---
 
-**Status**: ✅ 프론트엔드 활성화 | ⏳ 백엔드 API 구현 필요  
+**Status**: ✅ 프론트엔드 + 백엔드 API 배포 완료 | ⏳ Secrets 설정 필요  
 **Last Updated**: 2026-03-10
