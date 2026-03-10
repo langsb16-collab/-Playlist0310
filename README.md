@@ -253,18 +253,42 @@ npx wrangler deploy
 - ✅ 영구 데이터 저장 (D1)
 - ✅ 커스텀 도메인 연결
 - ✅ CI/CD 준비 완료
+- ✅ **번들 크기 최적화**: 680KB → 368KB (46% 감소)
+- ✅ **클라이언트 사이드 Gemini SDK 제거**: 모든 AI 처리를 백엔드로 이동
+- ✅ **향상된 에러 처리**: 한국어 에러 메시지 및 상세 로깅
 
 ## 💡 문제 해결
 
+### ⚠️ Gemini API 키 설정 필요
+현재 플레이스홀더 API 키가 설정되어 있습니다. 플레이리스트 생성 기능을 사용하려면 실제 Gemini API 키가 필요합니다.
+
+1. **Gemini API 키 발급**: https://aistudio.google.com/app/apikey
+2. **Secrets 업데이트**:
+```bash
+export CLOUDFLARE_API_TOKEN="QBMax9jMSjz0_G1avnehhJyHq42_ANS9DSagzAw_"
+cd /home/user/playlist0310/api
+npx wrangler secret put GEMINI_API_KEY
+# 발급받은 실제 API 키를 입력 (예: AIzaSy...)
+```
+
+3. **API 설정 확인**:
+```bash
+curl https://playlist0310-api.langsb16.workers.dev/
+# "gemini_api": "configured" 확인
+```
+
 ### API 연결 오류
-- CORS 설정 확인
-- Secrets 설정 확인
+- CORS 설정 확인 (모든 *.playlist0310.pages.dev 허용)
+- Secrets 설정 확인 (`npx wrangler secret list`)
+- 콘솔 로그 확인 (상세한 에러 메시지 표시)
 
 ### 데이터베이스 오류
 - 마이그레이션 실행: `npm run db:migrate`
+- 로컬 테스트: `npm run db:migrate:local`
 
 ### 배포 오류
 - Cloudflare 인증 확인: `npx wrangler whoami`
+- 빌드 확인: `npm run build`
 
 ## 📞 지원
 
@@ -274,4 +298,15 @@ GitHub Issues: https://github.com/langsb16-collab/-Playlist0310/issues
 
 **Status**: ✅ 프로덕션 배포 완료  
 **Main URL**: https://puke365.net  
+**API URL**: https://playlist0310-api.langsb16.workers.dev  
+**Latest Deploy**: https://d250e9a3.playlist0310.pages.dev  
+**Bundle Size**: 368 KB (gzip: 116 KB)  
 **Last Updated**: 2026-03-10
+
+### 최근 업데이트 (2026-03-10)
+- 🔧 클라이언트 사이드 Gemini SDK 완전 제거
+- 📦 번들 크기 46% 감소 (680KB → 368KB)
+- 🌐 모든 AI 처리를 백엔드 API로 이전
+- 🇰🇷 한국어 에러 메시지 추가
+- 🐛 상세한 API 에러 로깅 및 처리 개선
+- ✅ CORS 설정 개선 (동적 origin 지원)
