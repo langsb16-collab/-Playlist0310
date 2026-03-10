@@ -1,0 +1,5 @@
+{
+  "name": "AI Playlist & Auto-Uploader",
+  "description": "Generate AI playlists, create videos, and upload to YouTube automatically.",
+  "requestFramePermissions": ["camera", "microphone"]
+}

@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "home": "Home",
+    "playlist": "Playlist Generator",
+    "upload": "YouTube Upload",
+    "chat": "Chat",
+    "faq": "FAQ",
+    "dashboard": "Dashboard",
+    "history": "History",
+    "settings": "Settings"
+  },
+  "hero": {
+    "title": "AI Music Playlist Generator",
+    "desc": "Enter a theme and AI will create music and videos"
+  },
+  "button": {
+    "generate": "Generate Playlist",
+    "upload": "Upload to YouTube",
+    "getStarted": "Get Started",
+    "watchDemo": "Watch Demo",
+    "saveChanges": "Save Changes",
+    "deleteAll": "Delete All",
+    "connectChannel": "Connect Channel"
+  },
+  "generator": {
+    "theme": "Enter Theme",
+    "count": "Song Count",
+    "generate": "Generate",
+    "manual": "Add Manually"
+  },
+  "chat": {
+    "title": "Live Translation Chat",
+    "placeholder": "Type a message..."
+  },
+  "faq": {
+    "title": "FAQ",
+    "bot": "AI Bot"
+  }
+}

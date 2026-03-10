@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "home": "Beranda",
+    "playlist": "Generator Playlist",
+    "upload": "Upload YouTube",
+    "chat": "Obrolan",
+    "faq": "FAQ",
+    "dashboard": "Dasbor",
+    "history": "Riwayat",
+    "settings": "Pengaturan"
+  },
+  "hero": {
+    "title": "Generator Daftar Putar AI",
+    "desc": "Masukkan tema dan AI akan membuat musik dan video"
+  },
+  "button": {
+    "generate": "Buat Daftar Putar",
+    "upload": "Unggah ke YouTube",
+    "getStarted": "Mulai",
+    "watchDemo": "Tonton Demo",
+    "saveChanges": "Simpan Perubahan",
+    "deleteAll": "Hapus Semua",
+    "connectChannel": "Hubungkan Saluran"
+  },
+  "generator": {
+    "theme": "Masukkan Tema",
+    "count": "Jumlah Lagu",
+    "generate": "Buat",
+    "manual": "Tambah Manual"
+  },
+  "chat": {
+    "title": "Obrolan Terjemahan Langsung",
+    "placeholder": "Ketik pesan..."
+  },
+  "faq": {
+    "title": "FAQ",
+    "bot": "Bot AI"
+  }
+}

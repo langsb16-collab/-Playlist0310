@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "home": "Início",
+    "playlist": "Gerador de Playlist",
+    "upload": "Upload no YouTube",
+    "chat": "Chat",
+    "faq": "FAQ",
+    "dashboard": "Painel",
+    "history": "Histórico",
+    "settings": "Configurações"
+  },
+  "hero": {
+    "title": "Gerador de Playlist AI",
+    "desc": "Insira um tema e a IA criará músicas e vídeos"
+  },
+  "button": {
+    "generate": "Gerar Playlist",
+    "upload": "Upload no YouTube",
+    "getStarted": "Começar",
+    "watchDemo": "Ver Demo",
+    "saveChanges": "Salvar Alterações",
+    "deleteAll": "Excluir Tudo",
+    "connectChannel": "Conectar Canal"
+  },
+  "generator": {
+    "theme": "Inserir Tema",
+    "count": "Qtd de Músicas",
+    "generate": "Gerar",
+    "manual": "Adicionar Manualmente"
+  },
+  "chat": {
+    "title": "Chat com Tradução",
+    "placeholder": "Digite uma mensagem..."
+  },
+  "faq": {
+    "title": "FAQ",
+    "bot": "Bot AI"
+  }
+}

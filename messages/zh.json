@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "home": "首页",
+    "playlist": "播放列表生成",
+    "upload": "上传到YouTube",
+    "chat": "聊天",
+    "faq": "常见问题",
+    "dashboard": "仪表板",
+    "history": "历史",
+    "settings": "设置"
+  },
+  "hero": {
+    "title": "AI音乐播放列表生成平台",
+    "desc": "输入主题，AI自动生成音乐和视频"
+  },
+  "button": {
+    "generate": "生成播放列表",
+    "upload": "上传到YouTube",
+    "getStarted": "开始使用",
+    "watchDemo": "观看演示",
+    "saveChanges": "保存更改",
+    "deleteAll": "全部删除",
+    "connectChannel": "连接频道"
+  },
+  "generator": {
+    "theme": "输入主题",
+    "count": "歌曲数量",
+    "generate": "生成",
+    "manual": "手动添加"
+  },
+  "chat": {
+    "title": "实时翻译聊天",
+    "placeholder": "输入消息..."
+  },
+  "faq": {
+    "title": "常见问题",
+    "bot": "AI 机器人"
+  }
+}

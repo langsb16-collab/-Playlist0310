@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "home": "होम",
+    "playlist": "प्लेलिस्ट बनाएं",
+    "upload": "YouTube अपलोड",
+    "chat": "चैट",
+    "faq": "FAQ",
+    "dashboard": "डैशबोर्ड",
+    "history": "इतिहास",
+    "settings": "सेटिंग्स"
+  },
+  "hero": {
+    "title": "AI प्लेलिस्ट जनरेटर",
+    "desc": "एक विषय दर्ज करें और AI संगीत और वीडियो बनाएगा"
+  },
+  "button": {
+    "generate": "प्लेलिस्ट बनाएं",
+    "upload": "YouTube अपलोड",
+    "getStarted": "शुरू करें",
+    "watchDemo": "डेमो देखें",
+    "saveChanges": "परिवर्तन सहेजें",
+    "deleteAll": "सभी हटाएं",
+    "connectChannel": "चैनल कनेक्ट करें"
+  },
+  "generator": {
+    "theme": "विषय दर्ज करें",
+    "count": "गानों की संख्या",
+    "generate": "बनाएं",
+    "manual": "मैन्युअल रूप से जोड़ें"
+  },
+  "chat": {
+    "title": "लाइव अनुवाद चैट",
+    "placeholder": "संदेश टाइप करें..."
+  },
+  "faq": {
+    "title": "सामान्य प्रश्न",
+    "bot": "AI बॉट"
+  }
+}

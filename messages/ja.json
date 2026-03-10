@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "home": "ホーム",
+    "playlist": "プレイリスト生成",
+    "upload": "YouTubeアップロード",
+    "chat": "チャット",
+    "faq": "FAQ",
+    "dashboard": "ダッシュボード",
+    "history": "履歴",
+    "settings": "設定"
+  },
+  "hero": {
+    "title": "AI プレイリスト自動生成プラットフォーム",
+    "desc": "テーマを入力すると、AIが音楽と動画を生成します"
+  },
+  "button": {
+    "generate": "プレイリスト生成",
+    "upload": "YouTubeアップロード",
+    "getStarted": "今すぐ開始",
+    "watchDemo": "デモを見る",
+    "saveChanges": "変更を保存",
+    "deleteAll": "すべて削除",
+    "connectChannel": "チャンネルを接続"
+  },
+  "generator": {
+    "theme": "テーマを入力",
+    "count": "曲数",
+    "generate": "生成する",
+    "manual": "手動追加"
+  },
+  "chat": {
+    "title": "リアルタイム翻訳チャット",
+    "placeholder": "メッセージを入力..."
+  },
+  "faq": {
+    "title": "よくある質問",
+    "bot": "AI ロボット"
+  }
+}
