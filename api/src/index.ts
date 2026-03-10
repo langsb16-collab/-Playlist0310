@@ -16,7 +16,7 @@ const app = new Hono<{ Bindings: Bindings }>()
 app.use('/*', cors({
   origin: (origin) => {
     // Allow all Cloudflare Pages deployments and custom domains
-    if (!origin) return true; // Allow requests with no origin (e.g., mobile apps, curl)
+    if (!origin) return '*'; // Allow requests with no origin
     
     const allowedOrigins = [
       'https://puke365.net',
@@ -26,10 +26,15 @@ app.use('/*', cors({
     
     // Allow all playlist0310.pages.dev subdomains
     if (origin.includes('.playlist0310.pages.dev') || origin === 'https://playlist0310.pages.dev') {
-      return true;
+      return origin;
     }
     
-    return allowedOrigins.includes(origin);
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin)) {
+      return origin;
+    }
+    
+    return false;
   },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
