@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleGenAI, Type } from "@google/genai";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   Music, 
@@ -28,12 +27,10 @@ import {
   Trash2,
   Edit3
 } from "lucide-react";
-// Socket.IO removed - not needed for Cloudflare Pages
 import { translations, faqs, recommendationCategories, trendingThemes } from './constants';
 import { API_ENDPOINTS, apiClient } from './api';
 
-// Initialize Gemini
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+// All AI processing is done through backend API - no client-side Gemini initialization needed
 
 type Language = keyof typeof translations;
 type View = 'home' | 'generator' | 'dashboard' | 'history' | 'settings';
@@ -181,9 +178,17 @@ export default function App() {
       setHistory(prev => [newPlaylist, ...prev]);
       
       alert(`${data.length}개의 노래로 플레이리스트가 생성되었습니다!`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Playlist generation error", error);
-      alert('플레이리스트 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+      let errorMessage = '플레이리스트 생성 중 오류가 발생했습니다.';
+      
+      if (error.message && error.message.includes('API Error 500')) {
+        errorMessage += '\n\n⚠️ Gemini API 키가 설정되지 않았거나 잘못되었습니다.\n관리자에게 문의하세요.';
+      } else if (error.message && error.message.includes('Failed to fetch')) {
+        errorMessage += '\n\n⚠️ 백엔드 API 서버에 연결할 수 없습니다.\n네트워크 연결을 확인해주세요.';
+      }
+      
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

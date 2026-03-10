@@ -38,6 +38,30 @@ app.use('/*', cors({
   credentials: true,
 }))
 
+// Root endpoint - API info
+app.get('/', (c) => {
+  const hasGeminiKey = !!(c.env.GEMINI_API_KEY && !c.env.GEMINI_API_KEY.includes('placeholder'))
+  const hasYouTubeAuth = !!(c.env.YOUTUBE_CLIENT_ID && !c.env.YOUTUBE_CLIENT_ID.includes('placeholder'))
+  
+  return c.json({
+    name: 'Playlist0310 API',
+    version: '1.0.0',
+    status: 'running',
+    configuration: {
+      gemini_api: hasGeminiKey ? 'configured' : 'not configured',
+      youtube_oauth: hasYouTubeAuth ? 'configured' : 'not configured',
+      database: 'Cloudflare D1'
+    },
+    endpoints: {
+      health: '/health',
+      youtube_auth: '/api/auth/url',
+      gemini_generate: '/api/gemini/generate',
+      playlists: '/api/playlists',
+      chat: '/api/chat/send'
+    }
+  })
+})
+
 // Health check
 app.get('/health', (c) => {
   return c.json({ 
@@ -125,8 +149,11 @@ app.post('/api/auth/exchange', async (c) => {
 app.post('/api/gemini/generate', async (c) => {
   const GEMINI_API_KEY = c.env.GEMINI_API_KEY
   
-  if (!GEMINI_API_KEY) {
-    return c.json({ error: 'Gemini API key not configured' }, 500)
+  if (!GEMINI_API_KEY || GEMINI_API_KEY.includes('placeholder') || GEMINI_API_KEY.includes('your-')) {
+    return c.json({ 
+      error: 'Gemini API 키가 설정되지 않았습니다. 관리자에게 문의하세요.',
+      configured: false 
+    }, 500)
   }
 
   try {
@@ -145,7 +172,15 @@ app.post('/api/gemini/generate', async (c) => {
     
     if (!response.ok) {
       const error = await response.text()
-      return c.json({ error: 'Gemini API error', details: error }, response.status)
+      console.error('Gemini API Error:', response.status, error)
+      
+      if (response.status === 400) {
+        return c.json({ error: 'Gemini API 요청 형식이 잘못되었습니다.', details: error }, 400)
+      } else if (response.status === 401 || response.status === 403) {
+        return c.json({ error: 'Gemini API 키가 유효하지 않습니다. 관리자에게 문의하세요.', details: error }, 401)
+      }
+      
+      return c.json({ error: 'Gemini API 오류가 발생했습니다.', details: error }, response.status)
     }
 
     const data = await response.json()
@@ -159,8 +194,8 @@ app.post('/api/gemini/generate', async (c) => {
 app.post('/api/gemini/translate', async (c) => {
   const GEMINI_API_KEY = c.env.GEMINI_API_KEY
   
-  if (!GEMINI_API_KEY) {
-    return c.json({ error: 'Gemini API key not configured' }, 500)
+  if (!GEMINI_API_KEY || GEMINI_API_KEY.includes('placeholder') || GEMINI_API_KEY.includes('your-')) {
+    return c.json({ error: 'Gemini API 키가 설정되지 않았습니다.', configured: false }, 500)
   }
 
   try {
