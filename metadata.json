@@ -1,5 +1,8 @@
 {
-  "name": "AI Playlist & Auto-Uploader",
+  "name": "플레이리스트 자동 생성 플랫폼 -유튜브0310",
   "description": "Generate AI playlists, create videos, and upload to YouTube automatically.",
-  "requestFramePermissions": ["camera", "microphone"]
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
 }
