@@ -208,6 +208,42 @@ export default function App() {
     }
   };
 
+  const handlePlaySong = (song: Song) => {
+    // YouTube search URL
+    const searchQuery = encodeURIComponent(`${song.artist} ${song.title}`);
+    window.open(`https://www.youtube.com/results?search_query=${searchQuery}`, '_blank');
+  };
+
+  const handleSharePlaylist = () => {
+    const playlistText = currentPlaylist.map((s, i) => `${i + 1}. ${s.title} - ${s.artist}`).join('\n');
+    const text = `🎵 My Playlist:\n\n${playlistText}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: theme || 'My Playlist',
+        text: text,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text);
+      alert('플레이리스트가 클립보드에 복사되었습니다!');
+    }
+  };
+
+  const handleDownloadPlaylist = () => {
+    const playlistText = currentPlaylist.map((s, i) => `${i + 1}. ${s.title} - ${s.artist}`).join('\n');
+    const blob = new Blob([playlistText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${theme || 'playlist'}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDeleteSong = (index: number) => {
+    setCurrentPlaylist(prev => prev.filter((_, i) => i !== index));
+  };
+
   const sendMessage = async () => {
     if (!inputText.trim()) return;
     const msg: ChatMessage = {
@@ -251,9 +287,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans flex flex-col md:flex-row">
-      {/* Sidebar Navigation */}
-      <nav className="w-full md:w-20 lg:w-64 bg-[#1428A0] text-white flex flex-col h-screen sticky top-0 z-50">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-sans flex flex-col">
+      {/* Desktop Sidebar Navigation */}
+      <nav className="hidden md:flex w-20 lg:w-64 bg-[#1428A0] text-white flex-col h-screen fixed left-0 top-0 z-50">
         <div className="p-6 flex items-center gap-3">
           <Music className="w-8 h-8" />
           <h1 className="text-xl font-bold tracking-tight hidden lg:block">AI Playlist</h1>
@@ -288,7 +324,31 @@ export default function App() {
         </div>
       </nav>
 
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto relative">
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-inset-bottom">
+        <div className="flex justify-around items-center px-2 py-3">
+          {[
+            { id: 'home', icon: Globe, label: t.nav.home },
+            { id: 'generator', icon: Music, label: t.nav.playlist },
+            { id: 'dashboard', icon: LayoutDashboard, label: t.nav.dashboard },
+            { id: 'history', icon: History, label: t.nav.history },
+            { id: 'settings', icon: SettingsIcon, label: t.nav.settings }
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveView(item.id as View)}
+              className={`flex flex-col items-center gap-1 p-2 rounded-lg transition ${
+                activeView === item.id ? 'text-[#1428A0]' : 'text-gray-400'
+              }`}
+            >
+              <item.icon className="w-6 h-6" />
+              <span className="text-[10px] font-medium">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      <main className="flex-1 p-4 md:p-10 md:ml-20 lg:ml-64 pb-20 md:pb-10 overflow-y-auto relative">
         {/* Top Right Language Switcher */}
         <div className="absolute top-6 right-6 md:top-10 md:right-10 z-40">
           <div className="relative group">
@@ -458,8 +518,20 @@ export default function App() {
                     <div className="flex justify-between items-center mb-6">
                       <h3 className="text-xl font-bold">Generated Playlist</h3>
                       <div className="flex gap-2">
-                        <button className="p-2 hover:bg-gray-100 rounded-lg transition"><Download className="w-5 h-5" /></button>
-                        <button className="p-2 hover:bg-gray-100 rounded-lg transition"><Share2 className="w-5 h-5" /></button>
+                        <button 
+                          onClick={handleDownloadPlaylist}
+                          className="p-2 hover:bg-gray-100 rounded-lg transition"
+                          title="Download playlist"
+                        >
+                          <Download className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={handleSharePlaylist}
+                          className="p-2 hover:bg-gray-100 rounded-lg transition"
+                          title="Share playlist"
+                        >
+                          <Share2 className="w-5 h-5" />
+                        </button>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -473,8 +545,20 @@ export default function App() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
-                            <button className="p-2 text-gray-400 hover:text-[#1428A0]"><Play className="w-4 h-4" /></button>
-                            <button className="p-2 text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                            <button 
+                              onClick={() => handlePlaySong(song)}
+                              className="p-2 text-gray-400 hover:text-[#1428A0]"
+                              title="Play on YouTube"
+                            >
+                              <Play className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteSong(i)}
+                              className="p-2 text-gray-400 hover:text-red-500"
+                              title="Delete song"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </div>
                         </div>
                       ))}
