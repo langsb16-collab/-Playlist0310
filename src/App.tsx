@@ -151,8 +151,17 @@ export default function App() {
       // Parse the response
       let data = [];
       if (response.candidates && response.candidates[0]?.content?.parts[0]?.text) {
-        const textContent = response.candidates[0].content.parts[0].text;
-        data = JSON.parse(textContent);
+        let textContent = response.candidates[0].content.parts[0].text;
+        
+        // Remove markdown code blocks if present
+        textContent = textContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        
+        try {
+          data = JSON.parse(textContent);
+        } catch (parseError) {
+          console.error('JSON parse error:', parseError, 'Content:', textContent);
+          throw new Error('응답 파싱 실패');
+        }
       }
       
       if (!data || data.length === 0) {
