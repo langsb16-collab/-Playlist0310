@@ -140,12 +140,9 @@ export default function App() {
       const response = await apiClient.post(API_ENDPOINTS.geminiGenerate, {
         contents: [{
           parts: [{
-            text: `Recommend ${count} songs for the theme: "${targetTheme}". Return as a JSON array of objects with "title" and "artist" properties. Format: [{"title": "song name", "artist": "artist name"}]`
+            text: `Recommend ${count} songs for the theme: "${targetTheme}". Return ONLY a JSON array of objects with "title" and "artist" properties, nothing else. Format: [{"title": "song name", "artist": "artist name"}]`
           }]
-        }],
-        generationConfig: {
-          response_mime_type: "application/json"
-        }
+        }]
       });
       
       // Parse the response
