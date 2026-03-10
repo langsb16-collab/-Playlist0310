@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import { translations, faqs, recommendationCategories, trendingThemes } from './constants';
+import { API_ENDPOINTS, apiClient } from './api';
 
 // Initialize Gemini
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
@@ -95,11 +96,25 @@ export default function App() {
     };
     window.addEventListener('message', handleOAuth);
 
+    // Load playlists from backend
+    loadPlaylistHistory();
+
     return () => {
       socketRef.current?.disconnect();
       window.removeEventListener('message', handleOAuth);
     };
   }, []);
+
+  const loadPlaylistHistory = async () => {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.playlists);
+      if (response.playlists && Array.isArray(response.playlists)) {
+        setHistory(response.playlists);
+      }
+    } catch (error) {
+      console.error('Failed to load playlist history:', error);
+    }
+  };
 
   const handleIncomingMessage = async (msg: ChatMessage) => {
     if (msg.lang !== lang) {
@@ -112,11 +127,11 @@ export default function App() {
 
   const translateText = async (text: string, targetLang: string) => {
     try {
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: `Translate the following text to ${targetLang}. Only return the translated text: "${text}"`,
+      const response = await apiClient.post(API_ENDPOINTS.geminiTranslate, {
+        text,
+        targetLang
       });
-      return response.text?.trim();
+      return response.translatedText || text;
     } catch (error) {
       console.error("Translation error", error);
       return text;
@@ -125,43 +140,58 @@ export default function App() {
 
   const generatePlaylist = async (customTheme?: string) => {
     const targetTheme = customTheme || theme;
-    if (!targetTheme) return;
+    if (!targetTheme) {
+      alert('테마를 입력해주세요!');
+      return;
+    }
     setLoading(true);
     setActiveView('generator');
     try {
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: `Recommend ${count} songs for the theme: "${targetTheme}". Return as a JSON array of objects with "title" and "artist" properties.`,
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                title: { type: Type.STRING },
-                artist: { type: Type.STRING }
-              },
-              required: ["title", "artist"]
-            }
-          }
+      // Use backend API instead of direct Gemini call
+      const response = await apiClient.post(API_ENDPOINTS.geminiGenerate, {
+        contents: [{
+          parts: [{
+            text: `Recommend ${count} songs for the theme: "${targetTheme}". Return as a JSON array of objects with "title" and "artist" properties. Format: [{"title": "song name", "artist": "artist name"}]`
+          }]
+        }],
+        generationConfig: {
+          response_mime_type: "application/json"
         }
       });
-      const data = JSON.parse(response.text || "[]");
+      
+      // Parse the response
+      let data = [];
+      if (response.candidates && response.candidates[0]?.content?.parts[0]?.text) {
+        const textContent = response.candidates[0].content.parts[0].text;
+        data = JSON.parse(textContent);
+      }
+      
+      if (!data || data.length === 0) {
+        throw new Error('No songs generated');
+      }
+      
       setCurrentPlaylist(data);
       
-      // Add to history
+      // Save to backend database
       const newPlaylist: Playlist = {
         id: Date.now().toString(),
         title: targetTheme,
         theme: targetTheme,
         songs: data,
-        createdAt: new Date().toLocaleString(),
+        createdAt: new Date().toISOString(),
         status: 'draft'
       };
+      
+      // Save to backend
+      await apiClient.post(API_ENDPOINTS.playlists, newPlaylist);
+      
+      // Add to local history
       setHistory(prev => [newPlaylist, ...prev]);
+      
+      alert(`${data.length}개의 노래로 플레이리스트가 생성되었습니다!`);
     } catch (error) {
       console.error("Playlist generation error", error);
+      alert('플레이리스트 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
     } finally {
       setLoading(false);
     }
@@ -189,9 +219,17 @@ export default function App() {
   };
 
   const connectYoutube = async () => {
-    const res = await fetch('/api/auth/url');
-    const { url } = await res.json();
-    window.open(url, 'youtube_auth', 'width=600,height=700');
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.authUrl);
+      if (response.url) {
+        window.open(response.url, 'youtube_auth', 'width=600,height=700');
+      } else {
+        alert('YouTube 인증 URL을 가져올 수 없습니다.');
+      }
+    } catch (error) {
+      console.error('YouTube connection error:', error);
+      alert('YouTube 연결 중 오류가 발생했습니다.');
+    }
   };
 
   return (
